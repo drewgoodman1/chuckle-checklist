@@ -1,23 +1,40 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { getAllJokes } from "./services/jokeService.js";
+import { addJoke, getAllJokes } from "./services/jokeService.js";
+import stevePic from "./assets/steve.png";
 
 export const App = () => {
   const [allJokes, setAllJokes] = useState([]);
   const [newJokes, setNewJokes] = useState("");
+  const [toldJokes, setToldJokes] = useState([]);
+  const [untoldJokes, setUntoldJokes] = useState([]);
 
   useEffect(() => {
     getAllJokes().then((jokesArray) => {
       setAllJokes(jokesArray);
-      console.log("jokes set");
     });
   }, []); // run on initial render of component
 
+  useEffect(() => {
+    //this has to happen when allJokes changes
+    //filter the original array and create a new array of told jokes
+    //const tempToldJokes = allJokes.filter((joke) => joke.told === true);
+    setToldJokes(allJokes.filter((joke) => joke.told === true));
+    //setToldJokes(tempToldJokes);
+    //do the same for untold
+    //const tempUntoldJokes = allJokes.filter((joke) => joke.told === false);
+    setUntoldJokes(allJokes.filter((joke) => joke.told === false));
+  }, [allJokes]);
+
   return (
     <>
+      <div className="app-heading-circle">
+        <img className="app-logo" src={stevePic} alt="Good job Steve" />
+      </div>
       <input
         type="text"
-        value={newJokes}
+        placeholder="Tell me a joke"
+        value={newJokes} // binds state variable to event
         onChange={(event) => {
           setNewJokes(event.target.value);
         }}
@@ -25,7 +42,10 @@ export const App = () => {
       <button
         className="button"
         onClick={() => {
-          // POST
+          //invokes function that posts joke to db
+          addJoke(newJokes);
+          // re-set state variable .. double binding?
+          setNewJokes("");
         }}
       >
         Add
@@ -35,3 +55,6 @@ export const App = () => {
 };
 
 export default App;
+
+/*const toldJokes = jokesArray.filter(
+                    ({told}) => told === true);*/
