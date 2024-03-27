@@ -58,4 +58,10 @@
     width: 5rem;
     filter: drop-shadow(1px 1px 11px var(--col-0));
   }
+
+  .jokes {
+    display: flex;
+    flex-direction: row;
+    
+  }
 }

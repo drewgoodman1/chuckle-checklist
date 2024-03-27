@@ -1,28 +1,31 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { addJoke, getAllJokes } from "./services/jokeService.js";
+import { addJoke, editJokes, getAllJokes } from "./services/jokeService.js";
 import stevePic from "./assets/steve.png";
 
 export const App = () => {
   const [allJokes, setAllJokes] = useState([]);
-  const [newJokes, setNewJokes] = useState("");
+  const [newJoke, setNewJokes] = useState("");
   const [toldJokes, setToldJokes] = useState([]);
   const [untoldJokes, setUntoldJokes] = useState([]);
 
+  const getJokes = () => {
+    getAllJokes().then((jokesArray) => {
+      setAllJokes(jokesArray);
+    });
+  };
+
   useEffect(() => {
+    //get jokes from API and then use setter function for state var
     getAllJokes().then((jokesArray) => {
       setAllJokes(jokesArray);
     });
   }, []); // run on initial render of component
 
   useEffect(() => {
-    //this has to happen when allJokes changes
     //filter the original array and create a new array of told jokes
-    //const tempToldJokes = allJokes.filter((joke) => joke.told === true);
     setToldJokes(allJokes.filter((joke) => joke.told === true));
-    //setToldJokes(tempToldJokes);
     //do the same for untold
-    //const tempUntoldJokes = allJokes.filter((joke) => joke.told === false);
     setUntoldJokes(allJokes.filter((joke) => joke.told === false));
   }, [allJokes]);
 
@@ -34,7 +37,7 @@ export const App = () => {
       <input
         type="text"
         placeholder="Tell me a joke"
-        value={newJokes} // binds state variable to event
+        value={newJoke} // binds state variable to event
         onChange={(event) => {
           setNewJokes(event.target.value);
         }}
@@ -42,19 +45,66 @@ export const App = () => {
       <button
         className="button"
         onClick={() => {
-          //invokes function that posts joke to db
-          addJoke(newJokes);
-          // re-set state variable .. double binding?
-          setNewJokes("");
+          //add joke returns a promise - wait for it
+          addJoke(newJoke).then(() => {
+            //show all jokes after POST
+            getJokes();
+            setNewJokes("");
+          });
         }}
       >
         Add
       </button>
+      <article className="jokes">
+        <div className="untold">
+          <p>Untold</p>
+          {untoldJokes.length}
+          <div>
+            <ul>
+              {untoldJokes.map((joke) => {
+                return (
+                  <li key={joke.id}>
+                    {joke.text}
+                    <button
+                      className="joke-button"
+                      onClick={() => {
+                        editJokes(joke);
+                      }}
+                    >
+                      tell
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+        <div className="told">
+          <p>Told</p>
+          {toldJokes.length}
+          <div>
+            <ul>
+              {toldJokes.map((joke) => {
+                return (
+                  <li key={joke.id}>
+                    {joke.text}
+                    <button
+                      className="joke-button"
+                      onClick={() => {
+                        editJokes(joke);
+                      }}
+                    >
+                      un tell
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      </article>
     </>
   );
 };
 
 export default App;
-
-/*const toldJokes = jokesArray.filter(
-                    ({told}) => told === true);*/
