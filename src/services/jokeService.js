@@ -36,3 +36,16 @@ export const addJoke = async (newJoke) => {
     
     
 }
+
+export const deleteJoke = async (jokeObject) => {
+    const deleteOptions = {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }
+    //send the joke
+    const response = await fetch(`http://localhost:8088/jokes/${jokeObject.id}`, deleteOptions)
+    //return response.json()
+
+}

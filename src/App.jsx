@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { addJoke, editJokes, getAllJokes } from "./services/jokeService.js";
+import {
+  addJoke,
+  editJokes,
+  deleteJoke,
+  getAllJokes,
+} from "./services/jokeService.js";
 import stevePic from "./assets/steve.png";
 
 export const App = () => {
@@ -68,10 +73,22 @@ export const App = () => {
                     <button
                       className="joke-button"
                       onClick={() => {
+                        //PUT = change joke to told in db
                         editJokes(joke);
+                        //getJokes triggers a re-render with updated db
+                        getJokes();
                       }}
                     >
                       tell
+                    </button>
+                    <button
+                      className="delete-joke-button"
+                      onClick={() => {
+                        deleteJoke(joke);
+                        getJokes();
+                      }}
+                    >
+                      delete
                     </button>
                   </li>
                 );
@@ -89,12 +106,22 @@ export const App = () => {
                   <li key={joke.id}>
                     {joke.text}
                     <button
-                      className="joke-button"
+                      className="tell-joke-button"
                       onClick={() => {
                         editJokes(joke);
+                        getJokes();
                       }}
                     >
                       un tell
+                    </button>
+                    <button
+                      className="delete-joke-button"
+                      onClick={() => {
+                        deleteJoke(joke);
+                        getJokes();
+                      }}
+                    >
+                      delete
                     </button>
                   </li>
                 );
